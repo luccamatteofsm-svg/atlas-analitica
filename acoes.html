@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ações - Atlas Analítica</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+<header class="navbar">
+  <div class="brand">
+    <img src="img/logo.png" alt="Atlas Analítica" class="logo">
+    <span>Atlas Analítica</span>
+  </div>
+  <nav class="nav">
+    <a href="index.html">Home</a>
+    <a href="ranking.html">Ranking</a>
+    <a href="acoes.html" class="active">Ações</a>
+    <a href="fiis.html">FIIs</a>
+    <a href="internacional.html">Internacional</a>
+    <a href="outros.html">Outros</a>
+    <button id="themeToggle" class="theme-toggle" aria-pressed="false" title="Alternar tema">🌙</button>
+  </nav>
+</header>
+<main class="container">
+  <section class="grid">
+    <div class="card" style="padding:14px;">
+      <h2 style="margin:0 0 8px 0;">Ações</h2>
+      <p style="margin:0 0 10px 0;color:var(--muted)">Busca, filtros e KPIs — dados em tempo real via sua planilha.</p>
+      <div class="kpi" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin:10px 0;">
+        <div class="card" style="padding:10px;"><div class="badge">Empresas</div><div id="kpiEmpresas" style="font-size:22px;font-weight:800">—</div></div>
+        <div class="card" style="padding:10px;"><div class="badge">Média ROIC</div><div id="kpiROIC" style="font-size:22px;font-weight:800">—</div></div>
+        <div class="card" style="padding:10px;"><div class="badge">DY Médio</div><div id="kpiDY" style="font-size:22px;font-weight:800">—</div></div>
+        <div class="card" style="padding:10px;"><div class="badge">Atualizações</div><div id="kpiTicks" style="font-size:22px;font-weight:800">0</div></div>
+      </div>
+      <div class="card" style="padding:16px;margin:10px 0;">
+        <canvas id="chart"></canvas>
+      </div>
+      <div class="filters" style="display:flex;gap:10px;flex-wrap:wrap;margin:8px 0;">
+        <input id="q" placeholder="Buscar..." oninput="applyFilters()" style="padding:8px;border:1px solid var(--border);border-radius:8px;background:var(--card);color:var(--text)">
+        <select id="selSetor" onchange="applyFilters()" style="padding:8px;border:1px solid var(--border);border-radius:8px;background:var(--card);color:var(--text)"><option value="">Todos setores</option></select>
+        <select id="selSelo" onchange="applyFilters()" style="padding:8px;border:1px solid var(--border);border-radius:8px;background:var(--card);color:var(--text)">
+          <option value="">Todos selos</option>
+          <option value="ok">Viável</option>
+          <option value="warn">Atenção</option>
+          <option value="bad">Bomba</option>
+        </select>
+      </div>
+      <div style="overflow:auto;max-height:70vh;">
+        <table id="tbl" class="table">
+          <thead>
+            <tr>
+              <th>Ticker</th><th>Empresa</th><th>Setor</th><th>Preço</th>
+              <th>ROIC</th><th>DY</th><th>EV/EBIT</th><th>Estrelas</th><th>Selo</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</main>
+<footer class="footer">
+  <span>© Atlas Analítica</span>
+  <a href="https://atlas-analitica.pages.dev">atlas-analitica.pages.dev</a>
+</footer>
+
+<script>
+const API_URL = 'https://script.google.com/macros/s/AKfycbwppWofot1medHug0CamlUoZ2yS7o6p_pPGG_PlKBOv4YwBZYLFe61IW4qiTpfrNpLAUg/exec';
+const POLL_MS = 30000;
+let RAW = [], PRICE_CHART, TICKS = 0;
+const el = s => document.querySelector(s);
+const fmt = new Intl.NumberFormat('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
+function stars(n=0){return `<span style="color:gold">${"★".repeat(Math.round(n))}${"☆".repeat(5-Math.round(n))}</span>`}
+function pill(s){const map={ok:"Viável",warn:"Atenção",bad:"Bomba"};return `<span class='pill ${s}'>${map[s]||''}</span>`}
+function calcKPIs(rows){el('#kpiEmpresas').textContent=rows.length;
+  const avg=(arr,k)=>arr.length?arr.reduce((a,b)=>a+(+b[k]||0),0)/arr.length:0;
+  el('#kpiROIC').textContent=fmt.format(avg(rows,'ROIC'))+'%';
+  el('#kpiDY').textContent=fmt.format(avg(rows,'DY'))+'%';
+  el('#kpiTicks').textContent=++TICKS;}
+function cssVar(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+function buildChart(rows){const labels=rows.map(r=>r.Ticker),data=rows.map(r=>+r.Preco||0);
+  const brand=cssVar('--brand'), grid=cssVar('--border');
+  if(PRICE_CHART) PRICE_CHART.destroy();
+  PRICE_CHART=new Chart(document.getElementById('chart'),{type:'bar',
+    data:{labels,datasets:[{label:'Preço',data,backgroundColor:brand}]},
+    options:{scales:{x:{grid:{display:false}},y:{grid:{color:grid}}}}});}
+function renderTable(rows){el('#tbl tbody').innerHTML=rows.map(r=>`
+  <tr><td>${r.Ticker}</td><td>${r.Empresa}</td><td>${r.Setor}</td>
+  <td>R$ ${fmt.format(+r.Preco||0)}</td><td>${fmt.format(+r.ROIC||0)}%</td>
+  <td>${fmt.format(+r.DY||0)}%</td><td>${r.EV_EBIT||'-'}</td>
+  <td>${stars(r.Estrelas)}</td><td>${pill(r.Selo)}</td></tr>`).join('');}
+function applyFilters(){const q=el('#q').value.toLowerCase(),setor=el('#selSetor').value,selo=el('#selSelo').value;
+  let rows=RAW.slice();if(q)rows=rows.filter(r=>(r.Ticker||'').toLowerCase().includes(q)||(r.Empresa||'').toLowerCase().includes(q));
+  if(setor)rows=rows.filter(r=>(r.Setor||'')===setor);if(selo)rows=rows.filter(r=>(r.Selo||'').toLowerCase()===selo);
+  buildChart(rows);renderTable(rows);}
+function fillSetores(rows){const sel=el('#selSetor'),uniq=[...new Set(rows.map(r=>r.Setor).filter(Boolean))].sort();
+  sel.innerHTML='<option value="">Todos setores</option>'+uniq.map(s=>`<option value="${s}">${s}</option>`).join('');}
+async function fetchData(){try{const res=await fetch(API_URL+'?t='+(+new Date()));const json=await res.json();
+    RAW=Array.isArray(json.data)?json.data:[];fillSetores(RAW);calcKPIs(RAW);applyFilters();}
+  catch(err){console.error(err);}}
+fetchData();setInterval(fetchData,POLL_MS);
+</script>
+<script src="script.js"></script>
+</body>
+</html>
