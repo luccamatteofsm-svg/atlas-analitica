@@ -35,3 +35,20 @@ document.addEventListener('click', (e)=>{
     document.querySelectorAll('.has-dd.open').forEach(li=>li.classList.remove('open'));
   }
 });
+// adiciona link "Carteira" no menu em qualquer página
+document.addEventListener('DOMContentLoaded', () => {
+  const navList =
+    document.querySelector('.nav-list') ||
+    document.querySelector('.menu'); // fallback pro menu antigo
+
+  if (navList && !navList.querySelector('a[href="carteira.html"]')) {
+    const li = document.createElement('li');
+    const a = document.createElement('a');
+    a.href = 'carteira.html';
+    a.textContent = 'Carteira';
+    li.appendChild(a);
+
+    // coloca no final; se quiser antes de "Outros", mude o appendChild para insertBefore
+    navList.appendChild(li);
+  }
+});
