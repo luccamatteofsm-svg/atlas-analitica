@@ -1,65 +1,53 @@
-(function initTheme(){
-  const saved = localStorage.getItem('theme');
-  const sysDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  const theme = saved || (sysDark ? 'dark' : 'light');
-  document.documentElement.setAttribute('data-theme', theme);
-  document.getElementById('themeToggle')?.setAttribute('aria-pressed', String(theme==='dark'));
+// ===== THEME (escuro/claro) =====
+// aplica tema salvo antes do paint (fallback caso a página não tenha inline no <head>)
+(function () {
+  try {
+    const saved = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const theme = saved || (prefersDark ? 'dark' : 'light');
+    document.documentElement.classList.toggle('dark', theme === 'dark');
+  } catch (_) {}
 })();
-document.getElementById('themeToggle')?.addEventListener('click', () => {
-  const root = document.documentElement;
-  const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-  root.setAttribute('data-theme', next);
-  localStorage.setItem('theme', next);
-  document.getElementById('themeToggle')?.setAttribute('aria-pressed', String(next==='dark'));
-});
-// abrir/fechar menu mobile
-const hamb = document.getElementById('hamb');
-const list = document.querySelector('.nav-list');
-hamb?.addEventListener('click', () => list.classList.toggle('open'));
 
-// dropdown no mobile via clique
-document.querySelectorAll('.has-dd > a').forEach(a=>{
-  a.addEventListener('click', (e)=>{
-    if (window.matchMedia('(max-width:960px)').matches){
-      e.preventDefault();
-      a.parentElement.classList.toggle('open');
-    }
-  });
-});
-
-// fechar se clicar fora (mobile/desktop)
-document.addEventListener('click', (e)=>{
-  const inside = e.target.closest('.navbar');
-  if(!inside){
-    list?.classList.remove('open');
-    document.querySelectorAll('.has-dd.open').forEach(li=>li.classList.remove('open'));
-  }
-});
-// adiciona link "Carteira" no menu em qualquer página
 document.addEventListener('DOMContentLoaded', () => {
+  // ==== injeta link "Carteira" no menu (funciona em qualquer página) ====
   const menu =
     document.querySelector('header .menu') ||
     document.querySelector('nav .menu') ||
     document.querySelector('.nav-list');
 
-  if (!menu) return;
-
-  // evita duplicar
-  if (menu.querySelector('a[data-id="carteira"]')) return;
-
-  const li = document.createElement('li');
-  li.innerHTML = `<a data-id="carteira" href="/carteira.html">Carteira</a>`;
-
-  // tenta inserir antes de "Outros", se existir
-  const outros = [...menu.querySelectorAll('a')].find(a => /Outros/i.test(a.textContent));
-  if (outros && outros.parentElement && outros.parentElement.parentElement === menu) {
-    menu.insertBefore(li, outros.parentElement);
-  } else {
-    menu.appendChild(li);
+  if (menu && !menu.querySelector('a[data-id="carteira"]')) {
+    const li = document.createElement('li');
+    li.innerHTML = `<a data-id="carteira" href="/carteira.html">Carteira</a>`;
+    // tenta colocar antes de "Outros"
+    const outros = [...menu.querySelectorAll('a')].find(a => /Outros/i.test(a.textContent));
+    if (outros && outros.parentElement && outros.parentElement.parentElement === menu) {
+      menu.insertBefore(li, outros.parentElement);
+    } else {
+      menu.appendChild(li);
+    }
   }
-});
 
-    // coloca no final; se quiser antes de "Outros", mude o appendChild para insertBefore
-    navList.appendChild(li);
+  // ==== botão de alternância de tema (coloca no canto do header se não existir) ====
+  if (!document.querySelector('#themeToggle')) {
+    const btn = document.createElement('button');
+    btn.id = 'themeToggle';
+    btn.style.cssText = 'margin-left:12px;border:1px solid var(--border,#2a2f3a);border-radius:999px;padding:6px 10px;background:transparent;cursor:pointer;';
+    const setLabel = () => btn.textContent = document.documentElement.classList.contains('dark') ? '🌙' : '☀️';
+    setLabel();
+    btn.addEventListener('click', () => {
+      const isDark = document.documentElement.classList.toggle('dark');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      setLabel();
+    });
+
+    // tenta localizar área à direita do header; se não tiver, põe no fim do nav
+    const right =
+      document.querySelector('.header-actions') ||
+      document.querySelector('header nav') ||
+      document.querySelector('header') ||
+      document.body;
+
+    right.appendChild(btn);
   }
 });
