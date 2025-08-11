@@ -11,20 +11,87 @@
 </head>
 <body>
   <header class="navbar">
-    <div class="brand">
+  <div class="brand">
+    <a href="index.html" class="brand-link">
       <img src="img/logo.png" alt="Atlas Analítica" class="logo">
       <span>Atlas Analítica</span>
-    </div>
-    <nav class="nav">
-      <a href="index.html" class="active">Home</a>
-      <a href="ranking.html">Ranking</a>
-      <a href="acoes.html">Ações</a>
-      <a href="fiis.html">FIIs</a>
-      <a href="internacional.html">Internacional</a>
-      <a href="outros.html">Outros</a>
-      <button id="themeToggle" class="theme-toggle" aria-pressed="false" title="Alternar tema">🌙</button>
-    </nav>
-  </header>
+    </a>
+  </div>
+
+  <nav class="nav">
+    <ul class="nav-list">
+      <li><a href="index.html" class="active">Home</a></li>
+
+      <li class="has-dd">
+        <a href="ranking.html">Rankings</a>
+        <ul class="dd">
+          <li><a href="ranking.html">Geral</a></li>
+          <li><a href="ranking-roic.html">ROIC</a></li>
+          <li><a href="ranking-dy.html">Dividend Yield</a></li>
+          <li><a href="ranking-ev-ebit.html">EV/EBIT</a></li>
+        </ul>
+      </li>
+
+      <li class="has-dd">
+        <a href="acoes.html">Ações</a>
+        <ul class="dd">
+          <li><a href="acoes.html">Todas as Ações</a></li>
+          <li><a href="simulador.html">Simulador</a></li>
+          <li><a href="previsao-dividendos.html">Previsão de Dividendos</a></li>
+          <li><a href="agenda-dividendos.html">Agenda de Dividendos</a></li>
+          <li><a href="comparador.html">Comparador</a></li>
+          <li><a href="busca-avancada.html">Busca Avançada</a></li>
+        </ul>
+      </li>
+
+      <li class="has-dd">
+        <a href="fiis.html">FIIs</a>
+        <ul class="dd">
+          <li><a href="fiis.html">Todos os Fundos imobiliários</a></li>
+          <li><a href="fiagros.html">Todos os FIAGROs</a></li>
+          <li><a href="agenda-fiis.html">Agenda de Dividendos</a></li>
+          <li><a href="simulador-fiis.html">Simulador</a></li>
+          <li><a href="busca-avancada-fiis.html">Busca Avançada</a></li>
+          <li><a href="comparador-fiis.html">Comparador</a></li>
+        </ul>
+      </li>
+
+      <li class="has-dd">
+        <a href="internacional.html">Internacional</a>
+        <ul class="dd">
+          <li><a href="todas-acoes-int.html">Todas as Ações</a></li>
+          <li><a href="comparador-int.html">Comparador</a></li>
+          <li><a href="reits.html">REITs</a></li>
+          <li><a href="busca-avancada-int.html">Busca Avançada</a></li>
+        </ul>
+      </li>
+
+      <li class="has-dd">
+        <a href="outros.html">Outros</a>
+        <ul class="dd">
+          <li><a href="auvp11.html">AUVP11</a></li>
+          <li><a href="renda-fixa.html">Renda Fixa</a></li>
+          <li><a href="agenda-resultados.html">Agenda de Resultados</a></li>
+          <li><a href="indices.html">Índices</a></li>
+          <li class="sep">Calculadoras</li>
+          <li><a href="calculadoras/juros-simples.html">Juros Simples</a></li>
+          <li><a href="calculadoras/juros-compostos.html">Juros Compostos</a></li>
+          <li><a href="calculadoras/reserva.html">Reserva de Emergência</a></li>
+          <li><a href="calculadoras/aposentadoria.html">Aposentadoria</a></li>
+          <li><a href="calculadoras/poupanca-vs-selic.html">Poupança vs Selic</a></li>
+          <li><a href="calculadoras/renda-fixa.html">Comparador de Renda Fixa</a></li>
+          <li><a href="calculadoras/alugar-vs-financiar.html">Alugar vs Financiar</a></li>
+          <li><a href="calculadoras/primeiro-milhao.html">Primeiro Milhão</a></li>
+          <li><a href="busca-avancada.html">Busca Avançada</a></li>
+        </ul>
+      </li>
+    </ul>
+
+    <button id="themeToggle" class="theme-toggle" aria-pressed="false" title="Alternar tema">🌙</button>
+    <button class="hamb" id="hamb" aria-label="Menu">☰</button>
+  </nav>
+</header>
+
 
   <main class="container">
     <section class="hero card">
