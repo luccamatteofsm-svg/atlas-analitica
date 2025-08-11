@@ -12,3 +12,26 @@ document.getElementById('themeToggle')?.addEventListener('click', () => {
   localStorage.setItem('theme', next);
   document.getElementById('themeToggle')?.setAttribute('aria-pressed', String(next==='dark'));
 });
+// abrir/fechar menu mobile
+const hamb = document.getElementById('hamb');
+const list = document.querySelector('.nav-list');
+hamb?.addEventListener('click', () => list.classList.toggle('open'));
+
+// dropdown no mobile via clique
+document.querySelectorAll('.has-dd > a').forEach(a=>{
+  a.addEventListener('click', (e)=>{
+    if (window.matchMedia('(max-width:960px)').matches){
+      e.preventDefault();
+      a.parentElement.classList.toggle('open');
+    }
+  });
+});
+
+// fechar se clicar fora (mobile/desktop)
+document.addEventListener('click', (e)=>{
+  const inside = e.target.closest('.navbar');
+  if(!inside){
+    list?.classList.remove('open');
+    document.querySelectorAll('.has-dd.open').forEach(li=>li.classList.remove('open'));
+  }
+});
