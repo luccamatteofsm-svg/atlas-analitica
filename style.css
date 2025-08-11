@@ -45,3 +45,36 @@ tr:nth-child(even) td{background:var(--stripe)}
 tr:hover td{background:var(--hover)}
 .pill{padding:4px 8px;border-radius:999px;font-weight:700;font-size:12px;color:#fff}
 .pill.ok{background:var(--pos)} .pill.warn{background:var(--warn)} .pill.bad{background:var(--neg)}
+/* estrutura do menu */
+.nav {display:flex; align-items:center; gap:14px}
+.nav-list {display:flex; gap:16px; list-style:none; margin:0; padding:0}
+.nav-list > li > a {text-decoration:none; font-weight:600; color:var(--text); opacity:.9}
+.nav-list > li > a:hover, .nav-list > li > a.active {opacity:1; color:var(--brand)}
+
+/* dropdown */
+.has-dd {position:relative}
+.dd {
+  position:absolute; top:100%; left:0; min-width:260px;
+  background:var(--card); border:1px solid var(--border); border-radius:10px;
+  padding:8px; margin-top:10px; box-shadow:0 8px 28px #00000033;
+  display:none; z-index:30;
+}
+.has-dd:hover > .dd {display:block}          /* desktop: abre no hover */
+.dd li {list-style:none}
+.dd a {display:block; padding:10px 12px; border-radius:8px; color:var(--text); text-decoration:none}
+.dd a:hover {background:var(--hover); color:var(--brand)}
+.dd .sep {padding:8px 12px; font-size:12px; color:var(--muted); text-transform:uppercase}
+
+/* mobile */
+.hamb {display:none; border:1px solid var(--border); background:var(--card); border-radius:10px; padding:6px 10px}
+@media (max-width: 960px){
+  .hamb{display:block}
+  .nav-list{
+    position:fixed; inset:56px 0 0 0; background:var(--card);
+    display:none; flex-direction:column; padding:12px; gap:6px; overflow:auto; z-index:40;
+    border-top:1px solid var(--border);
+  }
+  .nav-list.open{display:flex}
+  .has-dd > .dd {position:static; display:none; border:none; box-shadow:none; padding:6px; margin:0; background:transparent}
+  .has-dd.open > .dd {display:block}
+}
