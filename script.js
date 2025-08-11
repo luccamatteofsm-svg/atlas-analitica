@@ -37,16 +37,27 @@ document.addEventListener('click', (e)=>{
 });
 // adiciona link "Carteira" no menu em qualquer página
 document.addEventListener('DOMContentLoaded', () => {
-  const navList =
-    document.querySelector('.nav-list') ||
-    document.querySelector('.menu'); // fallback pro menu antigo
+  const menu =
+    document.querySelector('header .menu') ||
+    document.querySelector('nav .menu') ||
+    document.querySelector('.nav-list');
 
-  if (navList && !navList.querySelector('a[href="carteira.html"]')) {
-    const li = document.createElement('li');
-    const a = document.createElement('a');
-    a.href = 'carteira.html';
-    a.textContent = 'Carteira';
-    li.appendChild(a);
+  if (!menu) return;
+
+  // evita duplicar
+  if (menu.querySelector('a[data-id="carteira"]')) return;
+
+  const li = document.createElement('li');
+  li.innerHTML = `<a data-id="carteira" href="/carteira.html">Carteira</a>`;
+
+  // tenta inserir antes de "Outros", se existir
+  const outros = [...menu.querySelectorAll('a')].find(a => /Outros/i.test(a.textContent));
+  if (outros && outros.parentElement && outros.parentElement.parentElement === menu) {
+    menu.insertBefore(li, outros.parentElement);
+  } else {
+    menu.appendChild(li);
+  }
+});
 
     // coloca no final; se quiser antes de "Outros", mude o appendChild para insertBefore
     navList.appendChild(li);
